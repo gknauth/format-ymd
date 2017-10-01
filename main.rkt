@@ -28,6 +28,9 @@
 (define (today->ymd8)
   (date->ymd8 (s19:current-date)))
 
+(define (today->ymd10)
+  (date->ymd10 (s19:current-date)))
+
 (define (day-of-week d)
   (vector-ref (vector 'sun 'mon 'tue 'wed 'thu 'fri 'sat) (s19:date-week-day d)))
 
@@ -106,6 +109,9 @@
   (define s0 (ymd10->seconds ymd10-beg))
   (/ (- s1 s0) DAY-SECONDS))
 
+(define (ymd8-days-since ymd8-beg ymd8-end)
+  (ymd10-days-since (ymd8->ymd10 ymd8-beg) (ymd8->ymd10 ymd8-end)))
+
 (define (ymd10->seconds ymd10)
   (find-seconds 0 0 0
                 (string->number (substring ymd10 8 10))
@@ -113,8 +119,14 @@
                 (string->number (substring ymd10 0 4))
                 #f))
 
+(define (ymd8->seconds ymd8)
+  (ymd10->seconds (ymd8->ymd10 ymd8)))
+
 (define (ymd10-d1-within-days-following-d0? d0 num-days d1)
   (<= (ymd10-days-since d0 d1) num-days))
+
+(define (ymd8-d1-within-days-following-d0? d0 num-days d1)
+  (<= (ymd8-days-since d0 d1) num-days))
 
 (module+ test
   ;; Tests to be run with raco test

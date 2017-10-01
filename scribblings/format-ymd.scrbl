@@ -104,6 +104,16 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd10->date "2017-10-01")]
 
+@defproc[(today->ymd10) string?]{Expresses today's date as a @racket{yyyy-mm-dd} string.}
+
+@examples[#:eval my-eval
+          (today->ymd10)]
+
+@defproc[(ymd10-day-of-week [ymd10 string?]) symbol?]{Given @racket{yyyy-dd-mm}, return a lowercase 3-letter English symbol representing the day of the week.}
+
+@examples[#:eval my-eval
+          (ymd10-day-of-week "2017-10-01")]
+
 @section{Year}
 
 @defproc[(leap-year? [year integer?]) boolean?]{Is @racket[year] a leap year?}
@@ -122,10 +132,22 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 
 @section{Arithmetic}
 
-@defproc[(ymd10-days-since [ymd10-beg string?] [ymd10-end string?]) integer?]{Produces the number of days from the @racket{yyyy-mm-dd} string representing the first day @racket[ymd10-beg] to the last day @racket[ymd10-end], not inclusive.}
+@defproc[(ymd8-days-since [ymd8-beg integer?] [ymd8-end integer?]) integer?]{Produces the number of days from the @racket[yyyymmdd] integer representing the first day @racket[ymd8-beg] up to the last day @racket[ymd8-end].}
+
+@examples[#:eval my-eval
+          (ymd8-days-since 20170515 20170715)]
+
+@defproc[(ymd10-days-since [ymd10-beg string?] [ymd10-end string?]) integer?]{Produces the number of days from the @racket{yyyy-mm-dd} string representing the first day @racket[ymd10-beg] up to the last day @racket[ymd10-end].}
 
 @examples[#:eval my-eval
           (ymd10-days-since "2017-05-15" "2017-07-15")]
+
+@defproc[(ymd8->seconds [ymd8 integer?]) integer?]{Answer the number of seconds since the platform-specific epoch of the @racket[yyyy-mm-dd] integer representing @racket[0Z] (@racket[00:00 UTC]) on that date.}
+
+@examples[#:eval my-eval
+          (let ([a (ymd8->seconds 20161231)]
+                [b (ymd8->seconds 20170101)])
+            (list a b (- b a)))]
 
 @defproc[(ymd10->seconds [ymd10 string?]) integer?]{Answer the number of seconds since the platform-specific epoch of the @racket{yyyy-mm-dd} string representing @racket[0Z] (@racket[00:00 UTC]) on that date.}
 
@@ -140,12 +162,11 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (ymd10-d1-within-days-following-d0? "2017-04-15" 30 "2017-05-15")
           (ymd10-d1-within-days-following-d0? "2017-05-15" 30 "2017-06-15")]
 
-@defproc[(ymd10-day-of-week [ymd10 string?]) symbol?]{Given @racket{yyyy-dd-mm}, return a lowercase 3-letter English symbol representing the day of the week.}
+@defproc[(ymd8-d1-within-days-following-d0? [d0 integer?] [num-days integer?] [d1 integer?]) boolean?]{Is @racket[d1] within @racket[num-days] following @racket[d0]?  Both @racket[d1] and @racket[d0] are integers of the form @racket[yyyymmdd].}
 
 @examples[#:eval my-eval
-          (ymd10-day-of-week "2017-10-01")]
-
-
+          (ymd8-d1-within-days-following-d0? 20170415 30 20170515)
+          (ymd8-d1-within-days-following-d0? 20170515 30 20170615)]
 
 @(bibliography
   (bib-entry #:key "SRFI-19"
