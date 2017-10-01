@@ -1,10 +1,13 @@
 #lang scribble/manual
 @(require scribble/core scribble/example scriblib/footnote
           format-ymd
-          (prefix-in s19: srfi/19))
+          (prefix-in s19: srfi/19)
+          ;racket/vector
+          )
 
 @require[@for-label[format-ymd
                     (prefix-in s19: srfi/19)
+                   ; racket/vector
                     racket/base]]
 
 @title{format-ymd: Simple year/month/day formatting}
@@ -16,7 +19,7 @@ The @racketmodname[format-ymd] module provides simple formatting for year, month
 
 Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], it refers to a function from @link["https://docs.racket-lang.org/srfi/srfi-19.html"]{srfi-19} @cite["SRFI-19"], which was included via @racket[(prefix-in s19: srfi/19)].
 
-@(define my-eval (make-base-eval `(require format-ymd (prefix-in s19: srfi/19))))
+@(define my-eval (make-base-eval `(require format-ymd (prefix-in s19: srfi/19) racket/vector)))
 
 @section{One}
 
@@ -86,6 +89,30 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (leap-year? 2016)
           (leap-year? 2000)
           (leap-year? 1900)]
+
+@defproc[(days-in-year [year integer?]) integer?]{How many days are in an Earth year?}
+
+@examples[#:eval my-eval
+          (days-in-year 2017)
+          (days-in-year 2016)]
+
+@defproc[(year-vector [year integer?]) (vectorof s19:date?)]{Produce a vector containing a @racket[s19:date] for each of the year's days.}
+
+@examples[#:eval my-eval
+          (let ([v (year-vector 2017)])
+            (list (vector-take v 3) (vector-take-right v 3)))]
+
+@defproc[(ymd10-days-since [ymd10-beg string?] [ymd10-end string?]) integer?]{Produces the number of days from the @racket{yyyy-mm-dd} string representing the first day @racket[ymd10-beg] to the last day @racket[ymd10-end], not inclusive.}
+
+@examples[#:eval my-eval
+          (ymd10-days-since "2017-05-15" "2017-07-15")]
+
+@defproc[(ymd10->seconds [ymd10 string?]) integer?]{Answer the number of seconds since the platform-specific epoch of the @racket{yyyy-mm-dd} string representing @racket[0Z] (@racket[00:00 UTC]) on that date.}
+
+@examples[#:eval my-eval
+          (let ([a (ymd10->seconds "2016-12-31")]
+                [b (ymd10->seconds "2017-01-01")])
+            (list a b (- b a)))]
 
 @make-lcl-note[]
 

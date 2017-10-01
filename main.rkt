@@ -67,7 +67,9 @@
   (if (leap-year? year) 366 365))
 
 (define DAY-SECONDS 86400)
-(define-struct a (noon-secs net net-seen tx) #:transparent)
+
+; I don't remember what this struct was supposed to be for.
+; (define-struct a (noon-secs net net-seen tx) #:transparent)
 
 (define v-month-day-ones
   #( 1 32 60 91 121 152 182 213 244 274 305 335)) ; non-leap
@@ -78,24 +80,26 @@
 (define (year-day ymd8) +nan.0)
 
 (define (year-vector year)
-  (let ((v (make-vector (if (leap-year? year) 366 365)))
-        (sec (find-seconds 0 0 12 1 1 year)))
-    (for ([i (in-range (vector-length v))])
-      (vector-set! v i ))
-    (printf "~a~n" sec)))
+  (let* ((ndays (days-in-year year))
+         (v (make-vector ndays))
+         (jan01 (ymd8->date (jan01-y4-ymd8 year))))
+    (for ([i (in-range (vector-length v))]
+          [day (in-naturals)])
+         (vector-set! v i (incr-date jan01 day)))
+    v))
 
 ;  0123456789
 ; "2015-11-10"
-(define (ymd10-days-since d1 d0)
-  (define s1 (ymd10->seconds d1))
-  (define s0 (ymd10->seconds d0))
-  (/ (- s1 s0) (* 24 3600)))
+(define (ymd10-days-since ymd10-beg ymd10-end)
+  (define s1 (ymd10->seconds ymd10-end))
+  (define s0 (ymd10->seconds ymd10-beg))
+  (/ (- s1 s0) DAY-SECONDS))
 
-(define (ymd10->seconds ymd)
+(define (ymd10->seconds ymd10)
   (find-seconds 0 0 0
-                (string->number (substring ymd 8 10))
-                (string->number (substring ymd 5 7))
-                (string->number (substring ymd 0 4))
+                (string->number (substring ymd10 8 10))
+                (string->number (substring ymd10 5 7))
+                (string->number (substring ymd10 0 4))
                 #f))
 
 (define (ymd10-d1-within-days-of-d0? d1 num-days d0)
