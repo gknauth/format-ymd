@@ -34,6 +34,11 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (date->ymd8 (s19:make-date 0 0 0 0 1 10 2017 0))]
 
+@defproc[(day-of-week [d s19:date?]) symbol?]{Query the day of week and return it as a lowercase 3-letter English symbol.}
+
+@examples[#:eval my-eval
+          (day-of-week (s19:make-date 0 0 0 0 1 10 2017 0))]
+
 @defproc[(incr-date [start-day s19:date?] [days integer?]) s19:date?]{Take @racket[00L] on the starting day and produce a date @racket[days] forward.}
 
 @examples[#:eval my-eval
@@ -58,17 +63,17 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd8->ymd10 20171001)]
 
-@defproc[(today->ymd8) integer?]{Expresses today's date as a @racket[yyyymmdd] integer.}
-
-@examples[#:eval my-eval
-          (today->ymd8)]
-
 @define-footnote[lcl-note make-lcl-note]
 
 @defproc[(ymd8->date [ymd8 integer?]) s19:date?]{Turns a @racket[yyyymmdd] integer into a @racket[srfi/19] date (at @racket[00L]@lcl-note{@racket[00L] means time @racket[00:00] in your computer's local time zone}).}
 
 @examples[#:eval my-eval
           (ymd8->date 20171001)]
+
+@defproc[(today->ymd8) integer?]{Expresses today's date as a @racket[yyyymmdd] integer.}
+
+@examples[#:eval my-eval
+          (today->ymd8)]
 
 @defproc[(jan01-ymd8-ymd8 [ymd8 integer?]) integer?]{Produce the January 1st @racket[yyyy0101] integer that is the first day of the year @racket[yyyymmdd] is in.}
 
@@ -79,6 +84,11 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 
 @examples[#:eval my-eval
           (jan01-y4-ymd8 2017)]
+
+@defproc[(ymd8-day-of-week [ymd8 integer?]) symbol?]{Given @racket[yyyyddd], return a lowercase 3-letter English symbol representing the day of the week.}
+
+@examples[#:eval my-eval
+          (ymd8-day-of-week 20171001)]
 
 @make-lcl-note[]
 
@@ -129,6 +139,13 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd10-d1-within-days-following-d0? "2017-04-15" 30 "2017-05-15")
           (ymd10-d1-within-days-following-d0? "2017-05-15" 30 "2017-06-15")]
+
+@defproc[(ymd10-day-of-week [ymd10 string?]) symbol?]{Given @racket{yyyy-dd-mm}, return a lowercase 3-letter English symbol representing the day of the week.}
+
+@examples[#:eval my-eval
+          (ymd10-day-of-week "2017-10-01")]
+
+
 
 @(bibliography
   (bib-entry #:key "SRFI-19"

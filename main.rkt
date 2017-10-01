@@ -28,6 +28,15 @@
 (define (today->ymd8)
   (date->ymd8 (s19:current-date)))
 
+(define (day-of-week d)
+  (vector-ref (vector 'sun 'mon 'tue 'wed 'thu 'fri 'sat) (s19:date-week-day d)))
+
+(define (ymd8-day-of-week ymd8)
+  (day-of-week (ymd8->date ymd8)))
+
+(define (ymd10-day-of-week ymd10)
+  (day-of-week (ymd10->date ymd10)))
+
 ;2011-02-03
 (define (ymd8->date ymd8)
   (s19:string->date (ymd8->ymd10 ymd8) "~Y-~m-~d"))
