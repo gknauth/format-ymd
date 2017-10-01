@@ -1,8 +1,8 @@
 #lang racket/base
+;; format-ymd/main.rkt
 ;; Copyright Geoffrey S. Knauth. See file "info.rkt".
 
-(require (prefix-in s19: (lib "19.ss" "srfi"))
-         ; (prefix-in s48: (lib "48.ss" "srfi"))
+(require (prefix-in s19: srfi/19)
          racket/date
          format-numbers)
 
