@@ -21,7 +21,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 
 @(define my-eval (make-base-eval `(require format-ymd (prefix-in s19: srfi/19) racket/vector)))
 
-@section{One}
+@section{srfi/19 dates}
 
 @defproc[(date->ymd10 [d s19:date?]) string?]{Turns a @racket[srfi/19] date into a @racket[yyyy-mm-dd] string.}
 
@@ -34,10 +34,29 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (date->ymd8 (s19:make-date 0 0 0 0 1 10 2017 0))]
 
-@defproc[(fmt-ymd8-s10 [yyyymmdd integer?]) string?]{Turns a @racket[yyyymmdd] integer into a @racket{yyyy-mm-dd} string.}
+@defproc[(incr-date [start-day s19:date?] [days integer?]) s19:date?]{Take @racket[00L] on the starting day and produce a date @racket[days] forward.}
 
 @examples[#:eval my-eval
-          (fmt-ymd8-s10 20171001)]
+          (let ([start-day (ymd10->date "2017-10-01")])
+            (incr-date start-day 16))]
+
+@defproc[(days-forward [start-day s19:date?] [days integer?]) (listof s19:date?)]{Take @racket[00L] on the starting day and produce a list of @racket[days] days going forward.}
+
+@examples[#:eval my-eval
+          (days-forward (ymd10->date "2017-09-29") 4)]
+
+@defproc[(year-vector [year integer?]) (vectorof s19:date?)]{Produce a vector containing a @racket[s19:date] for each of the year's days.}
+
+@examples[#:eval my-eval
+          (let ([v (year-vector 2017)])
+            (list (vector-take v 3) (vector-take-right v 3)))]
+
+@section{ymd8 integers}
+
+@defproc[(ymd8->ymd10 [ymd8 integer?]) string?]{Turns a @racket[yyyymmdd] integer into a @racket{yyyy-mm-dd} string.}
+
+@examples[#:eval my-eval
+          (ymd8->ymd10 20171001)]
 
 @defproc[(today->ymd8) integer?]{Expresses today's date as a @racket[yyyymmdd] integer.}
 
@@ -51,22 +70,6 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd8->date 20171001)]
 
-@defproc[(ymd10->date [ymd10 string?]) s19:date?]{Turns a @racket{yyyy-mm-dd} string into a @racket[srfi/19] date (at @racket[00L]).}
-
-@examples[#:eval my-eval
-          (ymd10->date "2017-10-01")]
-
-@defproc[(incr-date [start-day s19:date?] [days integer?]) s19:date?]{Take @racket[00L] on the starting day and produce a date @racket[days] forward.}
-
-@examples[#:eval my-eval
-          (let ([start-day (ymd10->date "2017-10-01")])
-            (incr-date start-day 16))]
-
-@defproc[(days-forward [start-day s19:date?] [days integer?]) (listof s19:date?)]{Take @racket[00L] on the starting day and produce a list of @racket[days] days going forward.}
-
-@examples[#:eval my-eval
-          (days-forward (ymd10->date "2017-09-29") 4)]
-
 @defproc[(jan01-ymd8-ymd8 [ymd8 integer?]) integer?]{Produce the January 1st @racket[yyyy0101] integer that is the first day of the year @racket[yyyymmdd] is in.}
 
 @examples[#:eval my-eval
@@ -77,10 +80,21 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (jan01-y4-ymd8 2017)]
 
-@defproc[(ymd8->10 [ymd8 integer?]) string?]{Turn a @racket{yyyymmdd} integer into a @racket{yyyy-mm-dd} string.}
+@make-lcl-note[]
+
+@section{ymd10 strings}
+
+@defproc[(ymd10->ymd8 [ymd10 string?]) integer?]{Turns a @racket{yyyy-mm-dd} string into a @racket[yyyymmdd] integer.}
 
 @examples[#:eval my-eval
-          (ymd8->10 20171001)]
+          (ymd10->ymd8 "2017-10-01")]
+
+@defproc[(ymd10->date [ymd10 string?]) s19:date?]{Turns a @racket{yyyy-mm-dd} string into a @racket[srfi/19] date (at @racket[00L]).}
+
+@examples[#:eval my-eval
+          (ymd10->date "2017-10-01")]
+
+@section{Year}
 
 @defproc[(leap-year? [year integer?]) boolean?]{Is @racket[year] a leap year?}
 
@@ -96,11 +110,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (days-in-year 2017)
           (days-in-year 2016)]
 
-@defproc[(year-vector [year integer?]) (vectorof s19:date?)]{Produce a vector containing a @racket[s19:date] for each of the year's days.}
-
-@examples[#:eval my-eval
-          (let ([v (year-vector 2017)])
-            (list (vector-take v 3) (vector-take-right v 3)))]
+@section{Arithmetic}
 
 @defproc[(ymd10-days-since [ymd10-beg string?] [ymd10-end string?]) integer?]{Produces the number of days from the @racket{yyyy-mm-dd} string representing the first day @racket[ymd10-beg] to the last day @racket[ymd10-end], not inclusive.}
 
@@ -114,7 +124,11 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
                 [b (ymd10->seconds "2017-01-01")])
             (list a b (- b a)))]
 
-@make-lcl-note[]
+@defproc[(ymd10-d1-within-days-following-d0? [d0 string?] [num-days integer?] [d1 string?]) boolean?]{Is @racket[d1] within @racket[num-days] following @racket[d0]?  Both @racket[d1] and @racket[d0] are strings of the form @racket{yyyy-mm-dd}.}
+
+@examples[#:eval my-eval
+          (ymd10-d1-within-days-following-d0? "2017-04-15" 30 "2017-05-15")
+          (ymd10-d1-within-days-following-d0? "2017-05-15" 30 "2017-06-15")]
 
 @(bibliography
   (bib-entry #:key "SRFI-19"

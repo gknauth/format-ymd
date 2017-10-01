@@ -11,10 +11,16 @@
 (define (date->ymd10 d)
   (s19:date->string d "~Y-~m-~d"))
 
-(define (fmt-ymd8-s10 yyyymmdd)
-  (let*-values ([(year mmdd) (quotient/remainder yyyymmdd 10000)]
+(define (ymd8->ymd10 ymd8)
+  (let*-values ([(year mmdd) (quotient/remainder ymd8 10000)]
                 [(month day) (quotient/remainder mmdd 100)])
     (string-append (number->string year) "-" (fmt-i-02d month) "-" (fmt-i-02d day))))
+
+(define (ymd10->ymd8 ymd10)
+  (let ([year (string->number (substring ymd10 0 4))]
+        [month (string->number (substring ymd10 5 7))]
+        [day (string->number (substring ymd10 8 10))])
+    (+ (* 10000 year) (* 100 month) day)))
          
 (define (date->ymd8 d)
   (string->number (s19:date->string d "~Y~m~d")))
@@ -24,7 +30,7 @@
 
 ;2011-02-03
 (define (ymd8->date ymd8)
-  (s19:string->date (fmt-ymd8-s10 ymd8) "~Y-~m-~d"))
+  (s19:string->date (ymd8->ymd10 ymd8) "~Y-~m-~d"))
 
 ; EXAMPLE
 ; (ymd8->date 20140912)
@@ -55,10 +61,6 @@
 
 (define (jan01-y4-ymd8 year)
   (+ (* year 10000) 101))
-
-(define (ymd8->10 ymd8)
-  (let ([s (number->string ymd8)])
-    (string-append (substring s 0 4) "-" (substring s 4 6) "-" (substring s 6))))
 
 (define (leap-year? year)
   (and (zero? (modulo year 4)) (or (positive? (modulo year 100)) (zero? (modulo year 400)))))
@@ -102,16 +104,13 @@
                 (string->number (substring ymd10 0 4))
                 #f))
 
-(define (ymd10-d1-within-days-of-d0? d1 num-days d0)
-  (<= (ymd10-days-since d1 d0) num-days))
-
-(module+ test
-  (require rackunit))
+(define (ymd10-d1-within-days-following-d0? d0 num-days d1)
+  (<= (ymd10-days-since d0 d1) num-days))
 
 (module+ test
   ;; Tests to be run with raco test
   (require rackunit)
-  (check-equal? (fmt-ymd8-s10 20170922) "2017-09-22")
+  (check-equal? (ymd8->ymd10 20170922) "2017-09-22")
   ;(check-equal? (ft))
   )
 
