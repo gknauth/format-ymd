@@ -57,10 +57,17 @@
 ; (ymd10->date "2014-09-12")
 ;= (date* 0 0 0 12 9 2014 5 254 #f -14400 0 "")
 
+(define DAY-SECONDS 86400)
+
 (define (incr-date start-day days)
-  (let ((one-day (* 24 3600)))
-    (s19:time-utc->date (s19:add-duration (s19:date->time-utc start-day)
-                                          (s19:make-time s19:time-duration 0 (* days one-day))))))
+  (s19:time-utc->date (s19:add-duration (s19:date->time-utc start-day)
+                                        (s19:make-time s19:time-duration 0 (* days DAY-SECONDS)))))
+
+(define (ymd8-incr-date ymd8-start-day days)
+  (date->ymd8 (incr-date (ymd8->date ymd8-start-day) days)))
+
+(define (ymd10-incr-date ymd10-start-day days)
+  (date->ymd10 (incr-date (ymd10->date ymd10-start-day) days)))
 
 (define (days-forward start-day days)
   (reverse (for/fold ((answer null))
@@ -79,8 +86,6 @@
 
 (define (days-in-year year)
   (if (leap-year? year) 366 365))
-
-(define DAY-SECONDS 86400)
 
 ; I don't remember what this struct was supposed to be for.
 ; (define-struct a (noon-secs net net-seen tx) #:transparent)

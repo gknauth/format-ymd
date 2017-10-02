@@ -21,6 +21,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 
 @(define my-eval (make-base-eval `(require format-ymd (prefix-in s19: srfi/19) racket/vector)))
 
+@;----------------------------------------------------------------------
 @section{srfi/19 dates}
 
 @defproc[(date->ymd10 [d s19:date?]) string?]{Turns a @racket[srfi/19] date into a @racket[yyyy-mm-dd] string.}
@@ -56,6 +57,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (let ([v (year-vector 2017)])
             (list (vector-take v 3) (vector-take-right v 3)))]
 
+@;----------------------------------------------------------------------
 @section{ymd8 integers}
 
 @defproc[(ymd8->ymd10 [ymd8 integer?]) string?]{Turns a @racket[yyyymmdd] integer into a @racket{yyyy-mm-dd} string.}
@@ -90,8 +92,14 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd8-day-of-week 20171001)]
 
+@defproc[(ymd8-incr-date [ymd8-start-day integer?] [days integer?]) integer?]{Take @racket[00L] on the starting day and produce a date @racket[days] forward.}
+
+@examples[#:eval my-eval
+          (ymd8-incr-date 20171001 16)]
+
 @make-lcl-note[]
 
+@;----------------------------------------------------------------------
 @section{ymd10 strings}
 
 @defproc[(ymd10->ymd8 [ymd10 string?]) integer?]{Turns a @racket{yyyy-mm-dd} string into a @racket[yyyymmdd] integer.}
@@ -114,6 +122,12 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
 @examples[#:eval my-eval
           (ymd10-day-of-week "2017-10-01")]
 
+@defproc[(ymd10-incr-date [ymd10-start-day string?] [days integer?]) string?]{Take @racket[00L] on the starting day and produce a date @racket[days] forward.}
+
+@examples[#:eval my-eval
+          (ymd10-incr-date "2017-10-01" 16)]
+
+@;----------------------------------------------------------------------
 @section{Year}
 
 @defproc[(leap-year? [year integer?]) boolean?]{Is @racket[year] a leap year?}
@@ -130,6 +144,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (days-in-year 2017)
           (days-in-year 2016)]
 
+@;----------------------------------------------------------------------
 @section{Arithmetic}
 
 @defproc[(ymd8-days-since [ymd8-beg integer?] [ymd8-end integer?]) integer?]{Produces the number of days from the @racket[yyyymmdd] integer representing the first day @racket[ymd8-beg] up to the last day @racket[ymd8-end].}
@@ -168,6 +183,7 @@ Where you see @racket[s19:], as in @racket[s19:date] or @racket[s19:make-date], 
           (ymd8-d1-within-days-following-d0? 20170415 30 20170515)
           (ymd8-d1-within-days-following-d0? 20170515 30 20170615)]
 
+@;----------------------------------------------------------------------
 @(bibliography
   (bib-entry #:key "SRFI-19"
              #:title "SRFI-19: Time Data Types and Procedures"
