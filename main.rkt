@@ -25,6 +25,12 @@
 (define (date->ymd8 d)
   (string->number (s19:date->string d "~Y~m~d")))
 
+(define (plusdays->ymd8 d ndays)
+  (string->number (s19:date->string (s19:julian-day->date (+ (s19:date->julian-day d) ndays)) "~Y~m~d")))
+
+(define (ymd8-plusdays->ymd8 ymd8 ndays)
+  (plusdays->ymd8 (ymd8->date ymd8) ndays))
+
 (define (today->ymd8)
   (date->ymd8 (s19:current-date)))
 
@@ -137,7 +143,7 @@
   ;; Tests to be run with raco test
   (require rackunit)
   (check-equal? (ymd8->ymd10 20170922) "2017-09-22")
-  ;(check-equal? (ft))
+  (check-equal? (ymd8-plusdays->ymd8 20180401 60) 20180531)
   )
 
 (module+ main
