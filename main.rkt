@@ -139,11 +139,24 @@
 (define (ymd8-d1-within-days-following-d0? d0 num-days d1)
   (<= (ymd8-days-since d0 d1) num-days))
 
+(define (every-ymd8-from-through start end)
+  (define (helper acc a b)
+    (cond [(= a b) (cons a acc)]
+          [else (helper (cons a acc) (ymd8-plusdays->ymd8 a 1) b)]))
+  (cond [(>= end start) (reverse (helper null start end))]
+        [else null]))
+
 (module+ test
   ;; Tests to be run with raco test
   (require rackunit)
   (check-equal? (ymd8->ymd10 20170922) "2017-09-22")
   (check-equal? (ymd8-plusdays->ymd8 20180401 60) 20180531)
+  (check-equal? (every-ymd8-from-through 20191127 20191204)
+                (list 20191127 20191128 20191129 20191130
+                      20191201 20191202 20191203 20191204))
+  (check-equal? (every-ymd8-from-through 20191127 20191127)
+                (list 20191127))
+  (check-equal? (every-ymd8-from-through 20191127 20191120) null)
   )
 
 (module+ main
